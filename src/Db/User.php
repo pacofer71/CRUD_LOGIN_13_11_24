@@ -28,6 +28,40 @@ class User extends Conexion{
             parent::cerrarConexion();
         }
     }
+
+    public static function loginValido(string $email, string $pass): bool|array{
+        $q="select username, perfil, pass from users where email=:e";
+        $stmt=parent::getConexion()->prepare($q);
+        try{
+            $stmt->execute([':e'=>$email]);
+        }catch(PDOException $ex){
+            throw new PDOException("Error en crear: ".$ex->getMessage());
+        }finally{
+            parent::cerrarConexion();
+        }
+        $resultado=$stmt->fetchAll(PDO::FETCH_OBJ);
+        if(count($resultado)==0) return false;
+        // si he llegado aquí el cooreo esta registrado, comprobare que la contraseña coincide
+        if(!password_verify($pass, $resultado[0]->pass)){
+            return false;
+        }
+        //Si he llegado aquí todo ha ido ok login exitoso
+        return [$resultado[0]->username, $email, $resultado[0]->perfil];
+
+    }
+
+    public static function existeValor(string $nomCampo, string $valorCampo): bool{
+        $q="select count(*) as total from users where $nomCampo=:v";
+        $stmt=parent::getConexion()->prepare($q);
+        try{
+            $stmt->execute([':v'=>$valorCampo]);
+        }catch(PDOException $ex){
+            throw new PDOException("Error en crear: ".$ex->getMessage());
+        }finally{
+            parent::cerrarConexion();
+        }
+        return $stmt->fetchAll(PDO::FETCH_OBJ)[0]->total; // 0 o 1 false o true
+    }
     
     public static function crearUsersRandom(int $cant){
         $faker = \Faker\Factory::create('es_ES');
