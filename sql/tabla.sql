@@ -3,5 +3,5 @@ create table users(
     username varchar(50) unique not null,
     email varchar(60) unique not null,
     pass varchar(200) not null,
-    perfil enum("Admin", "Normal", "Guest") default "Guest"
+    perfil enum("Admin", "Normal") default "Normal"
 );

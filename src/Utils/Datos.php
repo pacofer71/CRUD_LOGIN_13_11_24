@@ -2,6 +2,6 @@
  namespace App\Utils;
  class Datos{
     public static function getPerfiles(): array{
-        return ["Admin", "Normal", "Guest"];
+        return ["Admin", "Normal"];
     }
  }
